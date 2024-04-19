@@ -103,19 +103,26 @@ public class UpdateWindow extends JFrame {
 
         inputGBC.anchor = GridBagConstraints.WEST;
 
+        // Carica le icone PNG
+        ImageIcon salvaIcon = new ImageIcon("src/gui/icons/save.png");
+        ImageIcon annullaIcon = new ImageIcon("src/gui/icons/cancel.png");
+
         // Creazione dei pulsanti
-        salvaButton = new JButton("Salva");
-        annullaButton = new JButton("Annulla");
+        salvaButton = new JButton("Salva", salvaIcon);
+        annullaButton = new JButton("Annulla", annullaIcon);
 
         Dimension buttonSize = new Dimension(100, 30);
         salvaButton.setPreferredSize(buttonSize);
         annullaButton.setPreferredSize(buttonSize);
 
         salvaButton.addActionListener((e) -> {
-            String[] newValues = {textFieldFirst.getText(), textFieldLast.getText(), textFieldAddress.getText(),textFieldPhone.getText(), textFieldAge.getText()};
-            Person p = new Person(newValues);
-            gui.onClickUpdateWindowSalvaButton(p);
-            dispose();
+            Person p = getNewValues();
+            if (p != null){
+                gui.onClickUpdateWindowSalvaButton(p);
+                dispose();
+            } else {
+                JOptionPane.showMessageDialog(this, "Uno o più campi sono vuoti o invalidi!");
+            }
         });
 
         annullaButton.addActionListener((e) -> {
@@ -123,7 +130,7 @@ public class UpdateWindow extends JFrame {
             dispose();
         });
 
-        JPanel buttonPanel = new JPanel(new GridBagLayout());
+        /*JPanel buttonPanel = new JPanel(new GridBagLayout());
         GridBagConstraints buttonGBC = new GridBagConstraints();
         buttonGBC.gridx = 0;
         buttonGBC.gridy = 0;
@@ -133,26 +140,39 @@ public class UpdateWindow extends JFrame {
         buttonGBC.gridx++;
         buttonPanel.add(annullaButton, buttonGBC);
 
-        buttonGBC.anchor = GridBagConstraints.SOUTHEAST;
+        buttonGBC.anchor = GridBagConstraints.SOUTHEAST;*/
+
+        JToolBar toolBar = new JToolBar();
+
+        // Aggiungi i pulsanti alla toolbar
+        toolBar.add(salvaButton);
+        toolBar.add(annullaButton);
+        getContentPane().add(toolBar, BorderLayout.PAGE_START);
 
         // Creazione del pannello principale e posizionamento dei pannelli
         JPanel mainPanel = new JPanel(new BorderLayout());
         mainPanel.add(inputPanel, BorderLayout.CENTER);
-        mainPanel.add(buttonPanel, BorderLayout.SOUTH);
+        //mainPanel.add(buttonPanel, BorderLayout.SOUTH);
         getContentPane().add(mainPanel);
 
         setLocationRelativeTo(null); // Centra la finestra
     }
-}
 
-/*JPanel inputPanel = new JPanel(new GridLayout(5, 2, 5, 5));
-        inputPanel.add(labelFirst, BorderLayout.WEST);
-        inputPanel.add(textFieldFirst, BorderLayout.WEST);
-        inputPanel.add(labelLast, BorderLayout.WEST);
-        inputPanel.add(textFieldLast, BorderLayout.WEST);
-        inputPanel.add(labelAddress, BorderLayout.WEST);
-        inputPanel.add(textFieldAddress, BorderLayout.WEST);
-        inputPanel.add(labelPhone, BorderLayout.WEST);
-        inputPanel.add(textFieldPhone, BorderLayout.WEST);
-        inputPanel.add(labelAge, BorderLayout.WEST);
-        inputPanel.add(textFieldAge, BorderLayout.WEST);*/
+    public Person getNewValues() {
+        if (textFieldFirst.getText().trim().isEmpty())
+            return null;
+        if (textFieldLast.getText().trim().isEmpty())
+            return null;
+        if (textFieldAddress.getText().trim().isEmpty())
+            return null;
+        if (textFieldPhone.getText().trim().isEmpty() ||
+            !textFieldPhone.getText().trim().matches("[0-9]+"))
+            return null;
+        if (textFieldAge.getText().trim().isEmpty() ||
+            !textFieldAge.getText().trim().matches("[0-9]+"))
+            return null;
+
+        String[] newValues = {textFieldFirst.getText(), textFieldLast.getText(), textFieldAddress.getText(),textFieldPhone.getText(), textFieldAge.getText()};
+        return new Person(newValues);
+    }
+}

@@ -92,16 +92,15 @@ public class MainWindow extends JFrame {
         setMinimumSize(new Dimension(350, 350));
         setSize(600, 400);
 
-        // Creazione della label (titolo) della finestra principale
-        label = new JLabel("Rubrica telefonica");
-        JPanel labelPanel = new JPanel();
-        labelPanel.add(label);
-        getContentPane().add(labelPanel, BorderLayout.NORTH);
+        // Carica le icone PNG
+        ImageIcon nuovoIcon = new ImageIcon("src/gui/icons/person_add.png");
+        ImageIcon modificaIcon = new ImageIcon("src/gui/icons/person_edit.png");
+        ImageIcon eliminaIcon = new ImageIcon("src/gui/icons/person_cancel.png");
 
         // Creazione dei pulsanti
-        nuovoButton = new JButton("Nuovo");
-        modificaButton = new JButton("Modifica");
-        eliminaButton = new JButton("Elimina");
+        nuovoButton = new JButton("Nuovo", nuovoIcon);
+        modificaButton = new JButton("Modifica", modificaIcon);
+        eliminaButton = new JButton("Elimina", eliminaIcon);
         modificaButton.setEnabled(false);
         eliminaButton.setEnabled(false);
 
@@ -114,7 +113,7 @@ public class MainWindow extends JFrame {
         modificaButton.addActionListener(e -> { gui.onClickMainWindowModificaButton(table.getSelectedRow()); });
         eliminaButton.addActionListener(e -> { gui.onClickMainWindowEliminaButton(table.getSelectedRow()); });
 
-        JPanel buttonPanel = new JPanel(new GridBagLayout());
+        /*JPanel buttonPanel = new JPanel(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridx = 0;
         gbc.gridy = 0;
@@ -128,7 +127,16 @@ public class MainWindow extends JFrame {
         buttonPanel.add(eliminaButton, gbc);
 
         gbc.anchor = GridBagConstraints.SOUTH;
-        getContentPane().add(buttonPanel, BorderLayout.SOUTH);
+        getContentPane().add(buttonPanel, BorderLayout.SOUTH);*/
+
+        JToolBar toolBar = new JToolBar();
+
+        // Aggiungi i pulsanti alla toolbar
+        toolBar.add(nuovoButton);
+        toolBar.add(modificaButton);
+        toolBar.add(eliminaButton);
+
+        getContentPane().add(toolBar, BorderLayout.PAGE_START);
     }
 
     public void redrawTable(List<Person> people) {

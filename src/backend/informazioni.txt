@@ -1,3 +1,9 @@
 Steve;Jobs;via Cupertino 13;0612344;56
 Bill;Gates;via Redmond 10;06688989;60
 Babbo;Natale;via del Polo Nord;00000111;99
+Enea;Guarneri;via Avogadro 9;01010101;25
+Mario;Rossi;via Roma 2;01234567;32
+Maria;Rosso;via Torino 3;11221122;27
+Giuseppe;De Stefanis;corso Morandi 4;12341234;33
+Marco;Lello;via Bologna 5;00112200;40
+CArlotta;Verdi;corso Orbassano 123;01230123;22

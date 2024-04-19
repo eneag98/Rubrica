@@ -39,11 +39,23 @@ public class Rubrica_GUI {
     public void onClickMainWindowEliminaButton(int personIndex) {
         boolean res = false;
         oldPerson = data.getPeople().get(personIndex);
-        if (data.deletePerson(oldPerson)) {
-            System.out.println("OK!");
-            res = true;
-        } else
-            System.out.println("Error!");
+
+        Object[] options = {"Conferma", "Annulla"};
+        String title = "Azione richiesta";
+        String message = "Vuoi davvero eliminare "+oldPerson.getFirst()+" "+oldPerson.getLast()+"?";
+
+        int choice = JOptionPane.showOptionDialog(mainWindow,message,title,JOptionPane.YES_NO_OPTION,
+                JOptionPane.QUESTION_MESSAGE,null,options,options[0]);
+
+        if (choice == JOptionPane.YES_OPTION) {
+            if (data.deletePerson(oldPerson)) {
+                System.out.println("OK!");
+                JOptionPane.showMessageDialog(mainWindow, "Contatto eliminato con successo!");
+                res = true;
+            } else
+                //System.out.println("Error!");
+                JOptionPane.showMessageDialog(mainWindow, "Non è stato possibile eliminare il contatto.");
+        }// Il No torna indietro
 
         if (res) {
             oldPerson = null;
@@ -55,17 +67,21 @@ public class Rubrica_GUI {
         boolean res = false;
         if (oldPerson == null) { // Nuovo contatto
             if (data.addPerson(newPerson)) {
+                JOptionPane.showMessageDialog(updateWindow, "Nuovo contatto aggiunto con successo!");
                 System.out.println("OK!");
                 res = true;
             }
             else
-                System.out.println("Error!");
+                //System.out.println("Error!");
+                JOptionPane.showMessageDialog(updateWindow, "Non è stato possibile aggiungere un nuovo contatto.");
         } else { // Modifica contatto
             if (data.updatePerson(newPerson, oldPerson)) {
+                JOptionPane.showMessageDialog(updateWindow, "Contatto modificato con successo!");
                 System.out.println("OK!");
                 res = true;
             } else {
-                System.out.println("Error!");
+                //System.out.println("Error!");
+                JOptionPane.showMessageDialog(updateWindow, "Non è stato possibile modificare il contatto.");
             }
         }
         if (res) {
