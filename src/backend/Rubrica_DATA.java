@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Scanner;
-import java.util.stream.Collectors;
 
 public class Rubrica_DATA {
     private String fileName = "";
@@ -36,20 +35,20 @@ public class Rubrica_DATA {
     }
 
     public List<Person> getPeople() {
-        if(isDB) {
+        if(!isDB && isDirty) {
+            isDirty = false;
+            if(!renewDataFromFile()) {
+                System.out.println("Some errors while renewing people info...");
+                return new ArrayList<>();
+            }
+        }
+
+        if(isDB && (people.isEmpty() || isDirty))
             if(!renewDataFromDB()) {
                 System.out.println("Some errors while renewing people info...");
                 return new ArrayList<>();
             }
-        } else {
-            if (isDirty) {
-                isDirty = false;
-                if(!renewDataFromFile()) {
-                    System.out.println("Some errors while renewing people info...");
-                    return new ArrayList<>();
-                }
-            }
-        }
+
         return new ArrayList<>(people.values());
     }
 
@@ -97,8 +96,9 @@ public class Rubrica_DATA {
                 String address = rs.getString("address");
                 String phone = rs.getString("phone");
                 int age = rs.getInt("age");
-                System.out.println("ID: " + id +
-                        ", Nome: " + first + ", Cognome: " + last + ", Indirizzo: " + address + ", Telefono: " + phone + ", Età: " + age);
+                /*System.out.println("ID: " + id +
+                        ", Nome: " + first + ", Cognome: " + last + ", Indirizzo: " +
+                        address + ", Telefono: " + phone + ", Età: " + age);*/
                 people.put(id,new Person(first,last,address,phone,age));
             }
         } catch (Exception e) {
@@ -194,30 +194,113 @@ public class Rubrica_DATA {
     }
 
     public boolean updatePerson(Person newPerson, Person oldPerson) {
-        if (!people.containsValue(oldPerson) || oldPerson.same(newPerson))
-            return false;
-
         Integer id = -1;
         for (Integer key : people.keySet())
             if(people.get(key).equals(oldPerson))
                 id = key;
+
+        if(id == -1)
+            return false;
+
+        if (isDB)
+            return updatePersonDB(id, newPerson);
+
+        if (!people.containsValue(oldPerson) || oldPerson.same(newPerson))
+            return false;
 
         people.put(id, newPerson);
         isDirty = true;
         return updateDataFile();
     }
 
-    public boolean deletePerson(Person oldPerson) {
-        if (!people.containsValue(oldPerson))
-            return false;
+    public boolean updatePersonDB(int id, Person newPerson) {
+        boolean result = true;
+        Connection conn = null;
+        PreparedStatement pstmt = null;
 
+        try {
+            Class.forName("org.sqlite.JDBC");
+            conn = DriverManager.getConnection("jdbc:sqlite:"+fileName);
+            String sql = "UPDATE Person SET first = ?, last = ?, address = ?, phone = ?, age = ? WHERE id = ?";
+            pstmt = conn.prepareStatement(sql);
+
+            pstmt.setString(1, newPerson.getFirst());
+            pstmt.setString(2, newPerson.getLast());
+            pstmt.setString(3, newPerson.getAddress());
+            pstmt.setString(4, newPerson.getPhone());
+            pstmt.setInt(5, newPerson.getAge());
+            pstmt.setInt(6, id);
+
+            pstmt.executeUpdate();
+        } catch (Exception e) {
+            e.printStackTrace();
+            result = false;
+        } finally {
+            // Chiudi le risorse
+            try {
+                if (pstmt != null) pstmt.close();
+                if (conn != null) conn.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+                result = false;
+            }
+        }
+
+        return result;
+    }
+
+    public boolean deletePerson(Person oldPerson) {
         Integer id = -1;
         for (Integer key : people.keySet())
             if(people.get(key).equals(oldPerson))
                 id = key;
 
+        if (id == -1)
+            return false;
+
+        if (isDB)
+            if(deletePersonDB(id)) {
+                isDirty = true;
+                return true;
+            } else
+                return false;
+
+        if (!people.containsValue(oldPerson))
+            return false;
+
         people.remove(id);
         isDirty = true;
         return updateDataFile();
+    }
+
+    private boolean deletePersonDB(int id) {
+        boolean result = true;
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+
+        try {
+            Class.forName("org.sqlite.JDBC");
+            conn = DriverManager.getConnection("jdbc:sqlite:"+fileName);
+            String sql = "DELETE FROM Person WHERE id = ?";
+            pstmt = conn.prepareStatement(sql);
+
+            pstmt.setInt(1, id);
+
+            pstmt.executeUpdate();
+        } catch (Exception e) {
+            e.printStackTrace();
+            result = false;
+        } finally {
+            // Chiudi le risorse
+            try {
+                if (pstmt != null) pstmt.close();
+                if (conn != null) conn.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+                result = false;
+            }
+        }
+
+        return result;
     }
 }
