@@ -4,31 +4,35 @@ import gui.Rubrica_GUI;
 
 import java.io.*;
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 
 public class Rubrica_DATA {
-    private String fileName = "";
+    private final String dbName;
+    private final String fileName;
     private boolean isDB = false;
     private boolean isDirty = true;
     private HashMap<Integer,Person> people = new HashMap<>();
     public Rubrica_GUI gui;
 
-    public Rubrica_DATA(String fileName){
-        this.fileName= fileName;
-        if (fileName.contains(".db"))
+    public Rubrica_DATA(String databaseName, String fileName){
+        this.dbName = databaseName;
+        this.fileName = fileName;
+        if (dbName != null)
             isDB = true;
 
         if(isDB) {
             if(renewDataFromDB())
-                gui = new Rubrica_GUI(this, new ArrayList<>(people.values()));
-            else
-                gui = new Rubrica_GUI(this);
+                gui = new Rubrica_GUI(this, getPeople());
+            else {
+                isDB = false;
+                if (renewDataFromFile())
+                    gui = new Rubrica_GUI(this, getPeople());
+                else
+                    gui = new Rubrica_GUI(this);
+            }
         } else {
             if (renewDataFromFile())
-                gui = new Rubrica_GUI(this, new ArrayList<>(people.values()));
+                gui = new Rubrica_GUI(this, getPeople());
             else
                 gui = new Rubrica_GUI(this);
         }
@@ -49,7 +53,9 @@ public class Rubrica_DATA {
                 return new ArrayList<>();
             }
 
-        return new ArrayList<>(people.values());
+        List<Person> list = new ArrayList<>(people.values());
+        list.sort(Comparator.comparing(Person::getSortingInfo));
+        return list;
     }
 
     public boolean renewDataFromFile() {
@@ -62,7 +68,7 @@ public class Rubrica_DATA {
 
             while (scanner.hasNextLine()) {
                 String line = scanner.nextLine();
-                String[] values = line.split(";"); // Dividi la riga usando il punto e virgola come separatore
+                String[] values = line.split(";");
                 people.put(people.size(), new Person(values));
             }
             scanner.close();
@@ -82,7 +88,7 @@ public class Rubrica_DATA {
 
         try {
             Class.forName("org.sqlite.JDBC");
-            conn = DriverManager.getConnection("jdbc:sqlite:"+fileName);
+            conn = DriverManager.getConnection("jdbc:sqlite:"+dbName);
             stmt = conn.createStatement();
             rs = stmt.executeQuery("SELECT * FROM Person");
 
@@ -96,16 +102,13 @@ public class Rubrica_DATA {
                 String address = rs.getString("address");
                 String phone = rs.getString("phone");
                 int age = rs.getInt("age");
-                /*System.out.println("ID: " + id +
-                        ", Nome: " + first + ", Cognome: " + last + ", Indirizzo: " +
-                        address + ", Telefono: " + phone + ", Età: " + age);*/
+
                 people.put(id,new Person(first,last,address,phone,age));
             }
         } catch (Exception e) {
             e.printStackTrace();
             result = false;
         } finally {
-            // Chiudi le risorse
             try {
                 if (rs != null) rs.close();
                 if (stmt != null) stmt.close();
@@ -129,7 +132,7 @@ public class Rubrica_DATA {
                     +person.getAge()+"\n";
             list.add(formattedPerson);
         }
-        // Prova a scrivere le righe sul file
+
         try {
             BufferedWriter writer = new BufferedWriter(new FileWriter(fileName, false));
             if (list.size() == 0)
@@ -165,7 +168,7 @@ public class Rubrica_DATA {
 
         try {
             Class.forName("org.sqlite.JDBC");
-            conn = DriverManager.getConnection("jdbc:sqlite:"+fileName);
+            conn = DriverManager.getConnection("jdbc:sqlite:"+dbName);
             String sql = "INSERT INTO Person (first, last, address, phone, age) VALUES (?, ?, ?, ?, ?)";
             pstmt = conn.prepareStatement(sql);
 
@@ -220,7 +223,7 @@ public class Rubrica_DATA {
 
         try {
             Class.forName("org.sqlite.JDBC");
-            conn = DriverManager.getConnection("jdbc:sqlite:"+fileName);
+            conn = DriverManager.getConnection("jdbc:sqlite:"+dbName);
             String sql = "UPDATE Person SET first = ?, last = ?, address = ?, phone = ?, age = ? WHERE id = ?";
             pstmt = conn.prepareStatement(sql);
 
@@ -236,7 +239,6 @@ public class Rubrica_DATA {
             e.printStackTrace();
             result = false;
         } finally {
-            // Chiudi le risorse
             try {
                 if (pstmt != null) pstmt.close();
                 if (conn != null) conn.close();
@@ -280,7 +282,7 @@ public class Rubrica_DATA {
 
         try {
             Class.forName("org.sqlite.JDBC");
-            conn = DriverManager.getConnection("jdbc:sqlite:"+fileName);
+            conn = DriverManager.getConnection("jdbc:sqlite:"+dbName);
             String sql = "DELETE FROM Person WHERE id = ?";
             pstmt = conn.prepareStatement(sql);
 
@@ -291,7 +293,6 @@ public class Rubrica_DATA {
             e.printStackTrace();
             result = false;
         } finally {
-            // Chiudi le risorse
             try {
                 if (pstmt != null) pstmt.close();
                 if (conn != null) conn.close();

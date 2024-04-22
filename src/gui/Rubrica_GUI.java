@@ -7,7 +7,7 @@ import javax.swing.*;
 import java.util.List;
 
 public class Rubrica_GUI {
-    private MainWindow mainWindow;
+    private final MainWindow mainWindow;
     private UpdateWindow updateWindow;
     private Person oldPerson = null;
     public Rubrica_DATA data;
@@ -53,9 +53,8 @@ public class Rubrica_GUI {
                 JOptionPane.showMessageDialog(mainWindow, "Contatto eliminato con successo!");
                 res = true;
             } else
-                //System.out.println("Error!");
                 JOptionPane.showMessageDialog(mainWindow, "Non è stato possibile eliminare il contatto.");
-        }// Il No torna indietro
+        }
 
         if (res) {
             oldPerson = null;
@@ -72,7 +71,6 @@ public class Rubrica_GUI {
                 res = true;
             }
             else
-                //System.out.println("Error!");
                 JOptionPane.showMessageDialog(updateWindow, "Non è stato possibile aggiungere un nuovo contatto.");
         } else { // Modifica contatto
             if (data.updatePerson(newPerson, oldPerson)) {
@@ -80,7 +78,6 @@ public class Rubrica_GUI {
                 System.out.println("OK!");
                 res = true;
             } else {
-                //System.out.println("Error!");
                 JOptionPane.showMessageDialog(updateWindow, "Non è stato possibile modificare il contatto.");
             }
         }

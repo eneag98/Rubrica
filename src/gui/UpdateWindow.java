@@ -5,23 +5,10 @@ import javax.swing.*;
 import java.awt.*;
 
 public class UpdateWindow extends JFrame {
-    private JLabel labelFirst, labelLast, labelAddress, labelPhone, labelAge;
-    private JTextField textFieldFirst, textFieldLast, textFieldAddress, textFieldPhone, textFieldAge;
-    private JButton salvaButton, annullaButton;
-
-    public UpdateWindow(Rubrica_GUI gui) {
-        // Creazione dei componenti per l'inserimento dei dati
-        labelFirst = new JLabel("Nome:");
-        labelLast = new JLabel("Cognome:");
-        labelAddress = new JLabel("Indirizzo:");
-        labelPhone = new JLabel("Telefono:");
-        labelAge = new JLabel("Età:");
-
-        drawWindow(gui, "Crea nuovo contatto");
-    }
+    private final JLabel labelFirst, labelLast, labelAddress, labelPhone, labelAge;
+    private final JTextField textFieldFirst, textFieldLast, textFieldAddress, textFieldPhone, textFieldAge;
 
     public UpdateWindow(Rubrica_GUI gui, Person person) {
-        // Creazione dei componenti per l'inserimento dei dati
         labelFirst = new JLabel("Nome:");
         labelLast = new JLabel("Cognome:");
         labelAddress = new JLabel("Indirizzo:");
@@ -33,15 +20,15 @@ public class UpdateWindow extends JFrame {
             textFieldAddress = new JTextField(20);
             textFieldPhone = new JTextField(10);
             textFieldAge = new JTextField(3);
+            drawWindow(gui, "Crea nuovo contatto");
         } else {
             textFieldFirst = new JTextField(person.getFirst(), 20);
             textFieldLast = new JTextField(person.getLast(), 20);
             textFieldAddress = new JTextField(person.getAddress(), 20);
             textFieldPhone = new JTextField(person.getPhone(), 10);
             textFieldAge = new JTextField(String.valueOf(person.getAge()), 3);
+            drawWindow(gui, "Modifica contatto esistente");
         }
-
-        drawWindow(gui, "Modifica contatto esistente");
     }
 
     public void drawWindow(Rubrica_GUI gui, String title) {
@@ -62,7 +49,6 @@ public class UpdateWindow extends JFrame {
         textFieldPhone.setPreferredSize(inputSize);
         textFieldAge.setPreferredSize(inputSize);
 
-        // Creazione del pannello per i dati di input
         JPanel inputPanel = new JPanel(new GridBagLayout());
         GridBagConstraints inputGBC = new GridBagConstraints();
         inputGBC.gridx = 0;
@@ -103,13 +89,11 @@ public class UpdateWindow extends JFrame {
 
         inputGBC.anchor = GridBagConstraints.WEST;
 
-        // Carica le icone PNG
         ImageIcon salvaIcon = new ImageIcon("src/gui/icons/save.png");
         ImageIcon annullaIcon = new ImageIcon("src/gui/icons/cancel.png");
 
-        // Creazione dei pulsanti
-        salvaButton = new JButton("Salva", salvaIcon);
-        annullaButton = new JButton("Annulla", annullaIcon);
+        JButton salvaButton = new JButton("Salva", salvaIcon);
+        JButton annullaButton = new JButton("Annulla", annullaIcon);
 
         Dimension buttonSize = new Dimension(100, 30);
         salvaButton.setPreferredSize(buttonSize);
@@ -130,32 +114,17 @@ public class UpdateWindow extends JFrame {
             dispose();
         });
 
-        /*JPanel buttonPanel = new JPanel(new GridBagLayout());
-        GridBagConstraints buttonGBC = new GridBagConstraints();
-        buttonGBC.gridx = 0;
-        buttonGBC.gridy = 0;
-        buttonGBC.insets = new Insets(5, 5, 5, 5); // Margine di 5 pixel
-        buttonPanel.add(salvaButton, buttonGBC);
-
-        buttonGBC.gridx++;
-        buttonPanel.add(annullaButton, buttonGBC);
-
-        buttonGBC.anchor = GridBagConstraints.SOUTHEAST;*/
-
         JToolBar toolBar = new JToolBar();
 
-        // Aggiungi i pulsanti alla toolbar
         toolBar.add(salvaButton);
         toolBar.add(annullaButton);
         getContentPane().add(toolBar, BorderLayout.PAGE_START);
 
-        // Creazione del pannello principale e posizionamento dei pannelli
         JPanel mainPanel = new JPanel(new BorderLayout());
         mainPanel.add(inputPanel, BorderLayout.CENTER);
-        //mainPanel.add(buttonPanel, BorderLayout.SOUTH);
         getContentPane().add(mainPanel);
 
-        setLocationRelativeTo(null); // Centra la finestra
+        setLocationRelativeTo(null);
     }
 
     public Person getNewValues() {

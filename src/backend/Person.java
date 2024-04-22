@@ -59,6 +59,10 @@ public class Person {
                 "\nEtà: "+this.age;
     }
 
+    public String getSortingInfo() {
+        return this.last.toLowerCase()+this.first.toLowerCase();
+    }
+
     public String getFirst() {
         return first;
     }
