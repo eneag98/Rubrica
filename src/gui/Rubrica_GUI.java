@@ -1,27 +1,48 @@
 package gui;
 
-import backend.Person;
+import backend.Persona;
 import backend.Rubrica_DATA;
+import backend.Utente;
 
 import javax.swing.*;
 import java.util.List;
 
 public class Rubrica_GUI {
-    private final MainWindow mainWindow;
+    private final LoginWindow loginWindow;
+    private MainWindow mainWindow;
     private UpdateWindow updateWindow;
-    private Person oldPerson = null;
+    private Persona oldPerson = null;
     public Rubrica_DATA data;
 
     public Rubrica_GUI(Rubrica_DATA data) {
         this.data = data;
-        this.mainWindow = new MainWindow(this);
-        this.mainWindow.setVisible(true);
+        //this.mainWindow = new MainWindow(this);
+        //this.mainWindow.setVisible(true);
+        this.loginWindow = new LoginWindow(this);
+        this.loginWindow.setVisible(true);
     }
 
-    public Rubrica_GUI(Rubrica_DATA data, List<Person> people){
+    public Rubrica_GUI(Rubrica_DATA data, List<Persona> people){
         this.data = data;
-        this.mainWindow = new MainWindow(this, people);
-        this.mainWindow.setVisible(true);
+        //this.mainWindow = new MainWindow(this, people);
+        //this.mainWindow.setVisible(true);
+        this.loginWindow = new LoginWindow(this);
+        this.loginWindow.setVisible(true);
+    }
+
+    public void OnClickLoginWindowLoginButton(Utente utente) {
+        int res = data.submitLoginInputs(utente);
+        if(res == 1) {
+            this.mainWindow = new MainWindow(this, data.getPeople(), true);
+            this.mainWindow.setVisible(true);
+            loginWindow.dispose();
+        } else if (res == 0) {
+            this.mainWindow = new MainWindow(this, data.getPeople(), false);
+            this.mainWindow.setVisible(true);
+            loginWindow.dispose();
+        } else {
+            JOptionPane.showMessageDialog(loginWindow, "Username e/o password errati.", "Warning", JOptionPane.INFORMATION_MESSAGE);
+        }
     }
 
     public void onClickMainWindowNuovoButton() {
@@ -42,7 +63,7 @@ public class Rubrica_GUI {
 
         Object[] options = {"Conferma", "Annulla"};
         String title = "Azione richiesta";
-        String message = "Vuoi davvero eliminare "+oldPerson.getFirst()+" "+oldPerson.getLast()+"?";
+        String message = "Eliminare la persona "+oldPerson.getFirst().toUpperCase()+" "+oldPerson.getLast().toUpperCase()+"?";
 
         int choice = JOptionPane.showOptionDialog(mainWindow,message,title,JOptionPane.YES_NO_OPTION,
                 JOptionPane.QUESTION_MESSAGE,null,options,options[0]);
@@ -62,7 +83,7 @@ public class Rubrica_GUI {
         }
     }
 
-    public void onClickUpdateWindowSalvaButton(Person newPerson) {
+    public void onClickUpdateWindowSalvaButton(Persona newPerson) {
         boolean res = false;
         if (oldPerson == null) { // Nuovo contatto
             if (data.addPerson(newPerson)) {

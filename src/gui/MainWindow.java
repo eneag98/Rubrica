@@ -1,6 +1,6 @@
 package gui;
 
-import backend.Person;
+import backend.Persona;
 
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
@@ -20,7 +20,7 @@ public class MainWindow extends JFrame {
         tableModel = new DefaultTableModel();
         table = new JTable(tableModel);
 
-        drawWindow(gui);
+        drawWindow(gui, false);
 
         JLabel errorLabel1 = new JLabel("Errore: Informazioni su Database e File di testo MANCANTI o CORROTTE.");
         JLabel errorLabel2 = new JLabel("Le funzionalità previste sono disabilitate.");
@@ -40,16 +40,16 @@ public class MainWindow extends JFrame {
         eliminaButton.setEnabled(false);
     }
 
-    public MainWindow(Rubrica_GUI gui, List<Person> people) {
+    public MainWindow(Rubrica_GUI gui, List<Persona> people, boolean isAdmin) {
         String[] columnNames = {"Nome", "Cognome", "Telefono"};
         tableModel = new DefaultTableModel(columnNames, 0);
 
-        for (Person person : people) {
+        for (Persona person : people) {
             String[] row = {person.getFirst(), person.getLast(), person.getPhone()};
             tableModel.addRow(row);
         }
 
-        drawWindow(gui);
+        drawWindow(gui, isAdmin);
 
         table = new JTable(tableModel);
 
@@ -93,8 +93,11 @@ public class MainWindow extends JFrame {
         this.requestFocus();
     }
 
-    public void drawWindow(Rubrica_GUI gui) {
-        setTitle("Rubrica Turing - Enea Guarneri");
+    public void drawWindow(Rubrica_GUI gui, boolean isAdmin) {
+        String title = "Rubrica - " + gui.data.getUserInfo();
+        if(isAdmin)
+            title = title + " (admin)";
+        setTitle(title);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setMinimumSize(new Dimension(350, 250));
         setSize(600, 400);
@@ -102,6 +105,8 @@ public class MainWindow extends JFrame {
         ImageIcon nuovoIcon = new ImageIcon("src/gui/icons/person_add.png");
         ImageIcon modificaIcon = new ImageIcon("src/gui/icons/person_edit.png");
         ImageIcon eliminaIcon = new ImageIcon("src/gui/icons/person_cancel.png");
+        ImageIcon frameIcon = new ImageIcon("src/gui/icons/frame_icon.png");
+        setIconImage(frameIcon.getImage());
 
         nuovoButton = new JButton("Nuovo", nuovoIcon);
         modificaButton = new JButton("Modifica", modificaIcon);
@@ -114,9 +119,15 @@ public class MainWindow extends JFrame {
         modificaButton.setPreferredSize(buttonSize);
         eliminaButton.setPreferredSize(buttonSize);
 
-        nuovoButton.addActionListener(e -> gui.onClickMainWindowNuovoButton() );
-        modificaButton.addActionListener(e -> gui.onClickMainWindowModificaButton(table.getSelectedRow()) );
-        eliminaButton.addActionListener(e -> gui.onClickMainWindowEliminaButton(table.getSelectedRow()) );
+        if(isAdmin) {
+            nuovoButton.addActionListener(e -> gui.onClickMainWindowNuovoButton() );
+            modificaButton.addActionListener(e -> gui.onClickMainWindowModificaButton(table.getSelectedRow()) );
+            eliminaButton.addActionListener(e -> gui.onClickMainWindowEliminaButton(table.getSelectedRow()) );
+        } else {
+            nuovoButton.setEnabled(false);
+            modificaButton.setEnabled(false);
+            eliminaButton.setEnabled(false);
+        }
 
         JToolBar toolbar = new JToolBar();
 
@@ -127,9 +138,9 @@ public class MainWindow extends JFrame {
         getContentPane().add(toolbar, BorderLayout.PAGE_START);
     }
 
-    public void redrawTable(List<Person> people) {
+    public void redrawTable(List<Persona> people) {
         tableModel.setRowCount(0);
-        for (Person person : people) {
+        for (Persona person : people) {
             String[] row = {person.getFirst(), person.getLast(), person.getPhone()};
             tableModel.addRow(row);
         }

@@ -11,16 +11,20 @@ public class Rubrica_DATA {
     private final String fileName;
     private boolean isDB = false;
     private boolean isDirty = true;
-    private HashMap<Integer,Person> people = new HashMap<>();
+    private Utente loggedInUser;
+    private HashMap<Integer, Persona> people = new HashMap<>();
     public Rubrica_GUI gui;
 
     public Rubrica_DATA(String databaseName, String fileName){
         this.dbName = databaseName;
         this.fileName = fileName;
+        this.loggedInUser = null;
         if (dbName != null)
             isDB = true;
 
-        if(isDB) {
+        gui = new Rubrica_GUI(this);
+
+        /*if(isDB) {
             if(renewDataFromDB())
                 gui = new Rubrica_GUI(this, getPeople());
             else {
@@ -35,10 +39,10 @@ public class Rubrica_DATA {
                 gui = new Rubrica_GUI(this, getPeople());
             else
                 gui = new Rubrica_GUI(this);
-        }
+        }*/
     }
 
-    public List<Person> getPeople() {
+    public List<Persona> getPeople() {
         if(!isDB && isDirty) {
             isDirty = false;
             if(!renewDataFromFile()) {
@@ -53,9 +57,56 @@ public class Rubrica_DATA {
                 return new ArrayList<>();
             }
 
-        List<Person> list = new ArrayList<>(people.values());
-        list.sort(Comparator.comparing(Person::getSortingInfo));
+        List<Persona> list = new ArrayList<>(people.values());
+        list.sort(Comparator.comparing(Persona::getSortingInfo));
         return list;
+    }
+
+    public int submitLoginInputs(Utente utente) {
+        int result = -1;
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+
+        try {
+            Class.forName("org.sqlite.JDBC");
+            conn = DriverManager.getConnection("jdbc:sqlite:"+dbName);
+
+            String query = "SELECT first, last, admin FROM User WHERE username = ? AND password = ?";
+            stmt = conn.prepareStatement(query);
+            stmt.setString(1, utente.getUsername());
+            stmt.setString(2, utente.getPassword());
+            rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                result = rs.getInt("admin");
+                boolean admin = false;
+                if(result == 1)
+                    admin = true;
+                this.loggedInUser = new Utente(rs.getString("first"), rs.getString("last"), admin);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            result = -1;
+        } finally {
+            try {
+                if (rs != null) rs.close();
+                if (stmt != null) stmt.close();
+                if (conn != null) conn.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+                result = -1;
+            }
+        }
+
+        return result;
+    }
+
+    public String getUserInfo() {
+        String info = loggedInUser.getFirst();
+        if(this.loggedInUser.getLast() != null)
+            info = info + " " + this.loggedInUser.getLast();
+        return info;
     }
 
     public boolean renewDataFromFile() {
@@ -69,7 +120,7 @@ public class Rubrica_DATA {
             while (scanner.hasNextLine()) {
                 String line = scanner.nextLine();
                 String[] values = line.split(";");
-                people.put(people.size(), new Person(values));
+                people.put(people.size(), new Persona(values));
             }
             scanner.close();
         } catch (FileNotFoundException e) {
@@ -103,7 +154,7 @@ public class Rubrica_DATA {
                 String phone = rs.getString("phone");
                 int age = rs.getInt("age");
 
-                people.put(id,new Person(first,last,address,phone,age));
+                people.put(id,new Persona(first,last,address,phone,age));
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -124,7 +175,7 @@ public class Rubrica_DATA {
 
     public boolean updateDataFile() {
         List<String> list = new ArrayList<>();
-        for(Person person : people.values()) {
+        for(Persona person : people.values()) {
             String formattedPerson = person.getFirst()+";"
                     +person.getLast()+";"
                     +person.getAddress()+";"
@@ -149,7 +200,7 @@ public class Rubrica_DATA {
         return true;
     }
 
-    public boolean addPerson(Person newPerson) {
+    public boolean addPerson(Persona newPerson) {
         if(isDB)
             return addPersonDB(newPerson);
 
@@ -161,7 +212,7 @@ public class Rubrica_DATA {
         return updateDataFile();
     }
 
-    private boolean addPersonDB(Person newPerson) {
+    private boolean addPersonDB(Persona newPerson) {
         boolean result = true;
         Connection conn = null;
         PreparedStatement pstmt = null;
@@ -196,7 +247,7 @@ public class Rubrica_DATA {
         return result;
     }
 
-    public boolean updatePerson(Person newPerson, Person oldPerson) {
+    public boolean updatePerson(Persona newPerson, Persona oldPerson) {
         Integer id = -1;
         for (Integer key : people.keySet())
             if(people.get(key).equals(oldPerson))
@@ -216,7 +267,7 @@ public class Rubrica_DATA {
         return updateDataFile();
     }
 
-    public boolean updatePersonDB(int id, Person newPerson) {
+    public boolean updatePersonDB(int id, Persona newPerson) {
         boolean result = true;
         Connection conn = null;
         PreparedStatement pstmt = null;
@@ -251,7 +302,7 @@ public class Rubrica_DATA {
         return result;
     }
 
-    public boolean deletePerson(Person oldPerson) {
+    public boolean deletePerson(Persona oldPerson) {
         Integer id = -1;
         for (Integer key : people.keySet())
             if(people.get(key).equals(oldPerson))

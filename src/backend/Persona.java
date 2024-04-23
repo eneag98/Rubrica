@@ -1,13 +1,13 @@
 package backend;
 
-public class Person {
+public class Persona {
     private String first;
     private String last;
     private String address;
     private String phone;
     private int age;
 
-    public Person(String first, String last, String address, String phone, int age) {
+    public Persona(String first, String last, String address, String phone, int age) {
         this.first = first;
         this.last = last;
         this.address = address;
@@ -15,7 +15,7 @@ public class Person {
         this.age = age;
     }
 
-    public Person() {
+    public Persona() {
         this.first = "";
         this.last = "";
         this.address = "";
@@ -23,7 +23,7 @@ public class Person {
         this.age = -1;
     }
 
-    public Person(String[] values) {
+    public Persona(String[] values) {
         if (values.length == 5) {
             this.first = values[0];
             this.last = values[1];
@@ -32,11 +32,11 @@ public class Person {
             this.age = Integer.parseInt(values[4]);
         } else {
             System.out.println("Non è stato possibile creare la persona...");
-            new Person();
+            new Persona();
         }
     }
 
-    public boolean same(Person other) {
+    public boolean same(Persona other) {
         if (!this.first.equals(other.getFirst()))
             return false;
         if (!this.last.equals(other.getLast()))

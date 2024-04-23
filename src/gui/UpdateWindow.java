@@ -1,6 +1,6 @@
 package gui;
 
-import backend.Person;
+import backend.Persona;
 import javax.swing.*;
 import java.awt.*;
 
@@ -8,7 +8,7 @@ public class UpdateWindow extends JFrame {
     private final JLabel labelFirst, labelLast, labelAddress, labelPhone, labelAge;
     private final JTextField textFieldFirst, textFieldLast, textFieldAddress, textFieldPhone, textFieldAge;
 
-    public UpdateWindow(Rubrica_GUI gui, Person person) {
+    public UpdateWindow(Rubrica_GUI gui, Persona person) {
         labelFirst = new JLabel("Nome:");
         labelLast = new JLabel("Cognome:");
         labelAddress = new JLabel("Indirizzo:");
@@ -20,15 +20,14 @@ public class UpdateWindow extends JFrame {
             textFieldAddress = new JTextField(20);
             textFieldPhone = new JTextField(10);
             textFieldAge = new JTextField(3);
-            drawWindow(gui, "Crea nuovo contatto");
         } else {
             textFieldFirst = new JTextField(person.getFirst(), 20);
             textFieldLast = new JTextField(person.getLast(), 20);
             textFieldAddress = new JTextField(person.getAddress(), 20);
             textFieldPhone = new JTextField(person.getPhone(), 10);
             textFieldAge = new JTextField(String.valueOf(person.getAge()), 3);
-            drawWindow(gui, "Modifica contatto esistente");
         }
+        drawWindow(gui, "editor-persona");
     }
 
     public void drawWindow(Rubrica_GUI gui, String title) {
@@ -36,6 +35,11 @@ public class UpdateWindow extends JFrame {
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setMinimumSize(new Dimension(400, 350));
         setSize(500, 350);
+
+        ImageIcon salvaIcon = new ImageIcon("src/gui/icons/save.png");
+        ImageIcon annullaIcon = new ImageIcon("src/gui/icons/cancel.png");
+        ImageIcon frameIcon = new ImageIcon("src/gui/icons/frame_icon.png");
+        setIconImage(frameIcon.getImage());
 
         Dimension inputSize = new Dimension(100, 30);
         labelFirst.setPreferredSize(inputSize);
@@ -89,9 +93,6 @@ public class UpdateWindow extends JFrame {
 
         inputGBC.anchor = GridBagConstraints.WEST;
 
-        ImageIcon salvaIcon = new ImageIcon("src/gui/icons/save.png");
-        ImageIcon annullaIcon = new ImageIcon("src/gui/icons/cancel.png");
-
         JButton salvaButton = new JButton("Salva", salvaIcon);
         JButton annullaButton = new JButton("Annulla", annullaIcon);
 
@@ -100,7 +101,7 @@ public class UpdateWindow extends JFrame {
         annullaButton.setPreferredSize(buttonSize);
 
         salvaButton.addActionListener((e) -> {
-            Person p = getNewValues();
+            Persona p = getNewValues();
             if (p != null){
                 gui.onClickUpdateWindowSalvaButton(p);
                 dispose();
@@ -127,7 +128,7 @@ public class UpdateWindow extends JFrame {
         setLocationRelativeTo(null);
     }
 
-    public Person getNewValues() {
+    public Persona getNewValues() {
         if (textFieldFirst.getText().trim().isEmpty())
             return null;
         if (textFieldLast.getText().trim().isEmpty())
@@ -142,6 +143,6 @@ public class UpdateWindow extends JFrame {
             return null;
 
         String[] newValues = {textFieldFirst.getText(), textFieldLast.getText(), textFieldAddress.getText(),textFieldPhone.getText(), textFieldAge.getText()};
-        return new Person(newValues);
+        return new Persona(newValues);
     }
 }
