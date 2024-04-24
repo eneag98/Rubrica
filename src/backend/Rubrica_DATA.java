@@ -21,7 +21,7 @@ public class Rubrica_DATA {
         int port = -1;
 
         Properties properties = new Properties();
-        try (FileInputStream fis = new FileInputStream("./credentials.properties")) {
+        try (FileInputStream fis = new FileInputStream("./credenziali_database.properties")) {
             properties.load(fis);
 
             username = properties.getProperty("db.username");
