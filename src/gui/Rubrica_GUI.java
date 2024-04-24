@@ -8,7 +8,7 @@ import javax.swing.*;
 import java.util.List;
 
 public class Rubrica_GUI {
-    private final LoginWindow loginWindow;
+    private LoginWindow loginWindow;
     private MainWindow mainWindow;
     private UpdateWindow updateWindow;
     private Persona oldPerson = null;
@@ -16,18 +16,13 @@ public class Rubrica_GUI {
 
     public Rubrica_GUI(Rubrica_DATA data) {
         this.data = data;
-        //this.mainWindow = new MainWindow(this);
-        //this.mainWindow.setVisible(true);
         this.loginWindow = new LoginWindow(this);
         this.loginWindow.setVisible(true);
     }
 
-    public Rubrica_GUI(Rubrica_DATA data, List<Persona> people){
-        this.data = data;
-        //this.mainWindow = new MainWindow(this, people);
-        //this.mainWindow.setVisible(true);
-        this.loginWindow = new LoginWindow(this);
-        this.loginWindow.setVisible(true);
+    public Rubrica_GUI(){
+        this.mainWindow = new MainWindow(this);
+        this.mainWindow.setVisible(true);
     }
 
     public void OnClickLoginWindowLoginButton(Utente utente) {

@@ -14,7 +14,7 @@ import java.awt.*;
 public class MainWindow extends JFrame {
     private JTable table;
     private DefaultTableModel tableModel;
-    private JButton nuovoButton, modificaButton, eliminaButton;
+    private JButton newButton, editButton, deleteButton;
 
     public MainWindow(Rubrica_GUI gui) {
         tableModel = new DefaultTableModel();
@@ -22,22 +22,20 @@ public class MainWindow extends JFrame {
 
         drawWindow(gui, false);
 
-        JLabel errorLabel1 = new JLabel("Errore: Informazioni su Database e File di testo MANCANTI o CORROTTE.");
+        JLabel errorLabel1 = new JLabel("Errore: Informazioni sul Databse CORROTTE.");
         JLabel errorLabel2 = new JLabel("Le funzionalità previste sono disabilitate.");
-        JLabel errorLabel3 = new JLabel("Terminare l'applicazione. Controllare se i file esistono e/o se i loro nomi sono corretti ");
-        JLabel errorLabel4 = new JLabel("(Database: 'informazioni.db', File_testo: 'informazioni.txt')");
+        JLabel errorLabel3 = new JLabel("Terminare l'applicazione. Controllare se i file per la configurazione esistono e/o se il loro contenuto è corretto.");
 
         JPanel labelsPanel = new JPanel();
         labelsPanel.add(errorLabel1, BorderLayout.CENTER);
         labelsPanel.add(errorLabel2, BorderLayout.CENTER);
         labelsPanel.add(errorLabel3, BorderLayout.CENTER);
-        labelsPanel.add(errorLabel4, BorderLayout.CENTER);
 
         getContentPane().add(labelsPanel, BorderLayout.CENTER);
 
-        nuovoButton.setEnabled(false);
-        modificaButton.setEnabled(false);
-        eliminaButton.setEnabled(false);
+        newButton.setEnabled(false);
+        editButton.setEnabled(false);
+        deleteButton.setEnabled(false);
     }
 
     public MainWindow(Rubrica_GUI gui, List<Persona> people, boolean isAdmin) {
@@ -56,14 +54,16 @@ public class MainWindow extends JFrame {
         table.getSelectionModel().addListSelectionListener((e) -> {
             int selectedRowCount = table.getSelectedRowCount();
 
-            if (selectedRowCount == 0) {
-                nuovoButton.setEnabled(true);
-                modificaButton.setEnabled(false);
-                eliminaButton.setEnabled(false);
-            } else {
-                nuovoButton.setEnabled(false);
-                modificaButton.setEnabled(true);
-                eliminaButton.setEnabled(true);
+            if(isAdmin) {
+                if (selectedRowCount == 0) {
+                    newButton.setEnabled(true);
+                    editButton.setEnabled(false);
+                    deleteButton.setEnabled(false);
+                } else {
+                    newButton.setEnabled(false);
+                    editButton.setEnabled(true);
+                    deleteButton.setEnabled(true);
+                }
             }
         });
 
@@ -102,38 +102,38 @@ public class MainWindow extends JFrame {
         setMinimumSize(new Dimension(350, 250));
         setSize(600, 400);
 
-        ImageIcon nuovoIcon = new ImageIcon("src/gui/icons/person_add.png");
-        ImageIcon modificaIcon = new ImageIcon("src/gui/icons/person_edit.png");
-        ImageIcon eliminaIcon = new ImageIcon("src/gui/icons/person_cancel.png");
-        ImageIcon frameIcon = new ImageIcon("src/gui/icons/frame_icon.png");
+        ImageIcon newIcon = new ImageIcon("icons/person_add.png");
+        ImageIcon editIcon = new ImageIcon("icons/person_edit.png");
+        ImageIcon deleteIcon = new ImageIcon("icons/person_cancel.png");
+        ImageIcon frameIcon = new ImageIcon("icons/frame_icon.png");
         setIconImage(frameIcon.getImage());
 
-        nuovoButton = new JButton("Nuovo", nuovoIcon);
-        modificaButton = new JButton("Modifica", modificaIcon);
-        eliminaButton = new JButton("Elimina", eliminaIcon);
-        modificaButton.setEnabled(false);
-        eliminaButton.setEnabled(false);
+        newButton = new JButton("Nuovo", newIcon);
+        editButton = new JButton("Modifica", editIcon);
+        deleteButton = new JButton("Elimina", deleteIcon);
+        editButton.setEnabled(false);
+        deleteButton.setEnabled(false);
 
         Dimension buttonSize = new Dimension(100, 30);
-        nuovoButton.setPreferredSize(buttonSize);
-        modificaButton.setPreferredSize(buttonSize);
-        eliminaButton.setPreferredSize(buttonSize);
+        newButton.setPreferredSize(buttonSize);
+        editButton.setPreferredSize(buttonSize);
+        deleteButton.setPreferredSize(buttonSize);
 
         if(isAdmin) {
-            nuovoButton.addActionListener(e -> gui.onClickMainWindowNuovoButton() );
-            modificaButton.addActionListener(e -> gui.onClickMainWindowModificaButton(table.getSelectedRow()) );
-            eliminaButton.addActionListener(e -> gui.onClickMainWindowEliminaButton(table.getSelectedRow()) );
+            newButton.addActionListener(e -> gui.onClickMainWindowNuovoButton() );
+            editButton.addActionListener(e -> gui.onClickMainWindowModificaButton(table.getSelectedRow()) );
+            deleteButton.addActionListener(e -> gui.onClickMainWindowEliminaButton(table.getSelectedRow()) );
         } else {
-            nuovoButton.setEnabled(false);
-            modificaButton.setEnabled(false);
-            eliminaButton.setEnabled(false);
+            newButton.setEnabled(false);
+            editButton.setEnabled(false);
+            deleteButton.setEnabled(false);
         }
 
         JToolBar toolbar = new JToolBar();
 
-        toolbar.add(nuovoButton);
-        toolbar.add(modificaButton);
-        toolbar.add(eliminaButton);
+        toolbar.add(newButton);
+        toolbar.add(editButton);
+        toolbar.add(deleteButton);
 
         getContentPane().add(toolbar, BorderLayout.PAGE_START);
     }

@@ -5,27 +5,27 @@ import javax.swing.*;
 import java.awt.*;
 
 public class UpdateWindow extends JFrame {
-    private final JLabel labelFirst, labelLast, labelAddress, labelPhone, labelAge;
-    private final JTextField textFieldFirst, textFieldLast, textFieldAddress, textFieldPhone, textFieldAge;
+    private final JLabel firstLabel, lastLabel, addressLabel, phoneLabel, ageLabel;
+    private final JTextField firstTextField, lastTextField, addressTextField, phoneTextField, ageTextField;
 
     public UpdateWindow(Rubrica_GUI gui, Persona person) {
-        labelFirst = new JLabel("Nome:");
-        labelLast = new JLabel("Cognome:");
-        labelAddress = new JLabel("Indirizzo:");
-        labelPhone = new JLabel("Telefono:");
-        labelAge = new JLabel("Età:");
+        firstLabel = new JLabel("Nome:");
+        lastLabel = new JLabel("Cognome:");
+        addressLabel = new JLabel("Indirizzo:");
+        phoneLabel = new JLabel("Telefono:");
+        ageLabel = new JLabel("Età:");
         if (person == null) {
-            textFieldFirst = new JTextField(20);
-            textFieldLast = new JTextField(20);
-            textFieldAddress = new JTextField(20);
-            textFieldPhone = new JTextField(10);
-            textFieldAge = new JTextField(3);
+            firstTextField = new JTextField(20);
+            lastTextField = new JTextField(20);
+            addressTextField = new JTextField(20);
+            phoneTextField = new JTextField(10);
+            ageTextField = new JTextField(3);
         } else {
-            textFieldFirst = new JTextField(person.getFirst(), 20);
-            textFieldLast = new JTextField(person.getLast(), 20);
-            textFieldAddress = new JTextField(person.getAddress(), 20);
-            textFieldPhone = new JTextField(person.getPhone(), 10);
-            textFieldAge = new JTextField(String.valueOf(person.getAge()), 3);
+            firstTextField = new JTextField(person.getFirst(), 20);
+            lastTextField = new JTextField(person.getLast(), 20);
+            addressTextField = new JTextField(person.getAddress(), 20);
+            phoneTextField = new JTextField(person.getPhone(), 10);
+            ageTextField = new JTextField(String.valueOf(person.getAge()), 3);
         }
         drawWindow(gui, "editor-persona");
     }
@@ -36,71 +36,71 @@ public class UpdateWindow extends JFrame {
         setMinimumSize(new Dimension(400, 350));
         setSize(500, 350);
 
-        ImageIcon salvaIcon = new ImageIcon("src/gui/icons/save.png");
-        ImageIcon annullaIcon = new ImageIcon("src/gui/icons/cancel.png");
-        ImageIcon frameIcon = new ImageIcon("src/gui/icons/frame_icon.png");
+        ImageIcon salvaIcon = new ImageIcon("icons/save.png");
+        ImageIcon annullaIcon = new ImageIcon("icons/cancel.png");
+        ImageIcon frameIcon = new ImageIcon("icons/frame_icon.png");
         setIconImage(frameIcon.getImage());
 
         Dimension inputSize = new Dimension(100, 30);
-        labelFirst.setPreferredSize(inputSize);
-        labelLast.setPreferredSize(inputSize);
-        labelAddress.setPreferredSize(inputSize);
-        labelPhone.setPreferredSize(inputSize);
-        labelAge.setPreferredSize(inputSize);
-        textFieldFirst.setPreferredSize(inputSize);
-        textFieldLast.setPreferredSize(inputSize);
-        textFieldAddress.setPreferredSize(inputSize);
-        textFieldPhone.setPreferredSize(inputSize);
-        textFieldAge.setPreferredSize(inputSize);
+        firstLabel.setPreferredSize(inputSize);
+        lastLabel.setPreferredSize(inputSize);
+        addressLabel.setPreferredSize(inputSize);
+        phoneLabel.setPreferredSize(inputSize);
+        ageLabel.setPreferredSize(inputSize);
+        firstTextField.setPreferredSize(inputSize);
+        lastTextField.setPreferredSize(inputSize);
+        addressTextField.setPreferredSize(inputSize);
+        phoneTextField.setPreferredSize(inputSize);
+        ageTextField.setPreferredSize(inputSize);
 
         JPanel inputPanel = new JPanel(new GridBagLayout());
         GridBagConstraints inputGBC = new GridBagConstraints();
         inputGBC.gridx = 0;
         inputGBC.gridy = 0;
         inputGBC.insets = new Insets(5, 5, 5, 5); // Margine di 5 pixel
-        inputPanel.add(labelFirst, inputGBC);
+        inputPanel.add(firstLabel, inputGBC);
 
         inputGBC.gridx++;
-        inputPanel.add(textFieldFirst, inputGBC);
+        inputPanel.add(firstTextField, inputGBC);
 
         inputGBC.gridy++;
         inputGBC.gridx = 0;
-        inputPanel.add(labelLast, inputGBC);
+        inputPanel.add(lastLabel, inputGBC);
 
         inputGBC.gridx++;
-        inputPanel.add(textFieldLast, inputGBC);
+        inputPanel.add(lastTextField, inputGBC);
 
         inputGBC.gridy++;
         inputGBC.gridx = 0;
-        inputPanel.add(labelAddress, inputGBC);
+        inputPanel.add(addressLabel, inputGBC);
 
         inputGBC.gridx++;
-        inputPanel.add(textFieldAddress, inputGBC);
+        inputPanel.add(addressTextField, inputGBC);
 
         inputGBC.gridy++;
         inputGBC.gridx = 0;
-        inputPanel.add(labelPhone, inputGBC);
+        inputPanel.add(phoneLabel, inputGBC);
 
         inputGBC.gridx++;
-        inputPanel.add(textFieldPhone, inputGBC);
+        inputPanel.add(phoneTextField, inputGBC);
 
         inputGBC.gridy++;
         inputGBC.gridx = 0;
-        inputPanel.add(labelAge, inputGBC);
+        inputPanel.add(ageLabel, inputGBC);
 
         inputGBC.gridx++;
-        inputPanel.add(textFieldAge, inputGBC);
+        inputPanel.add(ageTextField, inputGBC);
 
         inputGBC.anchor = GridBagConstraints.WEST;
 
-        JButton salvaButton = new JButton("Salva", salvaIcon);
-        JButton annullaButton = new JButton("Annulla", annullaIcon);
+        JButton saveButton = new JButton("Salva", salvaIcon);
+        JButton cancelButton = new JButton("Annulla", annullaIcon);
 
         Dimension buttonSize = new Dimension(100, 30);
-        salvaButton.setPreferredSize(buttonSize);
-        annullaButton.setPreferredSize(buttonSize);
+        saveButton.setPreferredSize(buttonSize);
+        cancelButton.setPreferredSize(buttonSize);
 
-        salvaButton.addActionListener((e) -> {
+        saveButton.addActionListener((e) -> {
             Persona p = getNewValues();
             if (p != null){
                 gui.onClickUpdateWindowSalvaButton(p);
@@ -110,15 +110,15 @@ public class UpdateWindow extends JFrame {
             }
         });
 
-        annullaButton.addActionListener((e) -> {
+        cancelButton.addActionListener((e) -> {
             gui.onClickUpdateWindowAnnullaButton();
             dispose();
         });
 
         JToolBar toolBar = new JToolBar();
 
-        toolBar.add(salvaButton);
-        toolBar.add(annullaButton);
+        toolBar.add(saveButton);
+        toolBar.add(cancelButton);
         getContentPane().add(toolBar, BorderLayout.PAGE_START);
 
         JPanel mainPanel = new JPanel(new BorderLayout());
@@ -129,20 +129,20 @@ public class UpdateWindow extends JFrame {
     }
 
     public Persona getNewValues() {
-        if (textFieldFirst.getText().trim().isEmpty())
+        if (firstTextField.getText().trim().isEmpty())
             return null;
-        if (textFieldLast.getText().trim().isEmpty())
+        if (lastTextField.getText().trim().isEmpty())
             return null;
-        if (textFieldAddress.getText().trim().isEmpty())
+        if (addressTextField.getText().trim().isEmpty())
             return null;
-        if (textFieldPhone.getText().trim().isEmpty() ||
-            !textFieldPhone.getText().trim().matches("[0-9]+"))
+        if (phoneTextField.getText().trim().isEmpty() ||
+            !phoneTextField.getText().trim().matches("[0-9]+"))
             return null;
-        if (textFieldAge.getText().trim().isEmpty() ||
-            !textFieldAge.getText().trim().matches("[0-9]+"))
+        if (ageTextField.getText().trim().isEmpty() ||
+            !ageTextField.getText().trim().matches("[0-9]+"))
             return null;
 
-        String[] newValues = {textFieldFirst.getText(), textFieldLast.getText(), textFieldAddress.getText(),textFieldPhone.getText(), textFieldAge.getText()};
+        String[] newValues = {firstTextField.getText(), lastTextField.getText(), addressTextField.getText(), phoneTextField.getText(), ageTextField.getText()};
         return new Persona(newValues);
     }
 }
