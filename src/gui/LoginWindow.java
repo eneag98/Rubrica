@@ -16,10 +16,10 @@ public class LoginWindow extends JFrame {
         setMinimumSize(new Dimension(400, 325));
         setSize(400, 325);
 
-        ImageIcon usernameIcon = new ImageIcon("src/gui/icons/username.png");
-        ImageIcon passwordIcon = new ImageIcon("src/gui/icons/password.png");
-        ImageIcon loginIcon = new ImageIcon("src/gui/icons/login.png");
-        ImageIcon frameIcon = new ImageIcon("src/gui/icons/frame_icon.png");
+        ImageIcon usernameIcon = new ImageIcon("icons/username.png");
+        ImageIcon passwordIcon = new ImageIcon("icons/password.png");
+        ImageIcon loginIcon = new ImageIcon("icons/login.png");
+        ImageIcon frameIcon = new ImageIcon("icons/frame_icon.png");
         setIconImage(frameIcon.getImage());
 
         labelUsername = new JLabel("Username:", usernameIcon, JLabel.LEFT);
@@ -81,7 +81,8 @@ public class LoginWindow extends JFrame {
     public Utente getLoginValues() {
         if (textFieldUsername.getText().trim().isEmpty())
             return null;
-        if (textFieldPassword.getPassword().toString().trim().isEmpty())
+        String pass = new String(textFieldPassword.getPassword());
+        if (pass.trim().isEmpty())
             return null;
 
         return new Utente(textFieldUsername.getText(), new String(textFieldPassword.getPassword()));
